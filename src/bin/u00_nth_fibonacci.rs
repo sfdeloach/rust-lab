@@ -17,7 +17,7 @@ fn fib_iterative(n: u16) -> u128 {
 
     let (mut n_2, mut n_1) = (0, 1);
 
-    for _ in 0..n {
+    for _ in 2..n {
         (n_2, n_1) = (n_1, n_1 + n_2)
     }
 
@@ -35,9 +35,6 @@ fn main() {
 
     let n: u16 = n.trim().parse().expect("Not a valid number.");
 
-    if n < 20 {
-        println!("{}", fib_recursive(n));
-    } else {
-        println!("{}", fib_iterative(n));
-    }
+    println!("recursive: {}", fib_recursive(n));
+    println!("iterative: {}", fib_iterative(n));
 }
