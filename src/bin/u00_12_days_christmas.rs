@@ -1,36 +1,48 @@
-use std::io::{self, Write};
-
 // Print the lyrics to the Christmas carol “The Twelve Days of Christmas,” taking advantage of the repetition in the song.
-fn fahr_to_celsius(f: f64) -> f64 {
-    (f - 32.0) * 5.0 / 9.0
+
+/// provided a number, returns the ordinal
+fn ordinal(n: u32) -> &'static str {
+    match (n % 10, n % 100) {
+        (_, 11..=13) => "th",
+        (1, _) => "st",
+        (2, _) => "nd",
+        (3, _) => "rd",
+        _ => "th",
+    }
+}
+
+/// provided a gift and a day, returns the corresponding verse of the song
+fn gift_line(gift: u32, day: u32) -> &'static str {
+    match (gift, day) {
+        (1, 1) => "A partridge in a pear tree.\n",
+        (1, 12) => "And a partridge in a pear tree!\n",
+        (1, _) => "And a partridge in a pear tree.\n",
+        (2, _) => "Two turtle doves,",
+        (3, _) => "Three French hens,",
+        (4, _) => "Four calling birds,",
+        (5, _) => "Five golden rings,",
+        (6, _) => "Six geese a-laying,",
+        (7, _) => "Seven swans a-swimming,",
+        (8, _) => "Eight maids a-milking,",
+        (9, _) => "Nine ladies dancing,",
+        (10, _) => "Ten lords a-leaping,",
+        (11, _) => "Eleven pipers piping,",
+        (12, _) => "Twelve drummers drumming,",
+        _ => unreachable!("no gift for day {gift}"),
+    }
 }
 
 fn main() {
-    println!("Fahrenheit to Celsius");
+    println!("--- The Twelve Days of Christmas ---\n");
 
-    loop {
-        print!("Enter a temp in deg F or 'x' to exit: ");
-        io::stdout().flush().expect("Failed to flush stdout");
+    for day in 1..=12 {
+        println!(
+            "On the {day}{} day of Christmas,\nMy true love sent to me:",
+            ordinal(day)
+        );
 
-        let mut temp = String::new();
-        io::stdin()
-            .read_line(&mut temp)
-            .expect("Failed to read line");
-
-        temp = temp.trim().to_lowercase();
-
-        if temp == "x" {
-            break;
+        for gift in (1..=day).rev() {
+            println!("{}", gift_line(gift, day));
         }
-
-        let temp: f64 = match temp.parse() {
-            Ok(num) => num,
-            Err(_) => {
-                println!("Not a valid number, try again.");
-                continue;
-            }
-        };
-
-        println!("{:.1} deg C", fahr_to_celsius(temp));
     }
 }
