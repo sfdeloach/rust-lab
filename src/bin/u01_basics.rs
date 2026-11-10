@@ -1,12 +1,13 @@
 // read whitespace-separated integers from stdin, print min, max, sum, mean
 // (as f64), and a line per value saying odd/even. Use if as an expression at
-// least once, shadowing at least once, and a labelled break to stop at the
+// least once, shadowing at least once, and a labeled break to stop at the
 // first negative number.
 
 use std::io::{self, Write};
 
 fn atoi(buffer: &Vec<char>) -> i32 {
     let mut integer = String::new();
+    // if buffer converted to a String, this loop goes away
     for c in buffer {
         integer.push(*c);
     }
@@ -16,7 +17,7 @@ fn atoi(buffer: &Vec<char>) -> i32 {
 
 fn main() {
     let mut user_input = String::new();
-    let mut buffer: Vec<char> = Vec::new();
+    let mut buffer: Vec<char> = Vec::new(); // TODO: this can be a string
     let mut integers: Vec<i32> = Vec::new();
 
     print!("Enter integers: ");
