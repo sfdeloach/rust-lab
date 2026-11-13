@@ -4,20 +4,9 @@
 // first negative number.
 
 use std::io::{self, Write};
-
-fn atoi(buffer: &Vec<char>) -> i32 {
-    let mut integer = String::new();
-    // if buffer converted to a String, this loop goes away
-    for c in buffer {
-        integer.push(*c);
-    }
-
-    integer.parse().expect("Unable to parse {integer}")
-}
-
 fn main() {
     let mut user_input = String::new();
-    let mut buffer: Vec<char> = Vec::new(); // TODO: this can be a string
+    let mut buffer: String = String::new();
     let mut integers: Vec<i32> = Vec::new();
 
     print!("Enter integers: ");
@@ -30,14 +19,33 @@ fn main() {
         if char.is_numeric() {
             buffer.push(char);
         } else if char.is_whitespace() {
-            let integer = atoi(&buffer);
+            let integer = buffer.parse().expect("msg");
             integers.push(integer);
             buffer.clear();
         }
     }
 
+    let mut min = integers[0];
+    let mut max = integers[0];
+    let mut sum = 0;
+
     // a line per value with its parity, using if as an expression
-    for i in integers {
+    for i in &integers {
         println!("{i}: {}", if i % 2 == 0 { "even" } else { "odd" });
+
+        if *i < min {
+            min = *i;
+        }
+
+        if *i > max {
+            max = *i;
+        }
+
+        sum += *i;
     }
+
+    println!("min = {min}");
+    println!("max = {max}");
+    println!("sum = {sum}");
+    println!("mean = {}", sum as f64 / integers.len() as f64);
 }
