@@ -3,40 +3,32 @@
 // least once, shadowing at least once, and a labeled break to stop at the
 // first negative number.
 
-use std::io::{self};
+use std::io;
 fn main() {
-    let mut user_input = String::new();
     let mut integers = Vec::new();
-    let mut index = 0;
-    let mut may_be_negative = false;
 
-    // gather user input
     println!(
         "Enter non-negative integers separated by whitespace. A negative number stops processing."
     );
 
-    io::stdin()
-        .read_line(&mut user_input)
-        .expect("Failed to read line.");
-
-    'input_processing: for char in user_input.chars() {
-        if char.is_numeric() && !may_be_negative {
-            if integers.get(index) == None {
-                integers.push(String::from(""));
+    // gather user input
+    'lines: for line in io::stdin().lines() {
+        let line = line.expect("read error");
+        for token in line.split_whitespace() {
+            let n: i64 = match token.parse() {
+                Ok(n) => n,
+                Err(_) => {
+                    eprintln!("skipping {token:?}");
+                    continue;
+                }
+            };
+            // exits both loops; a plain `break` would only exit the inner one
+            if n < 0 {
+                break 'lines;
             }
-            integers[index].push(char);
-        } else if char.is_numeric() && may_be_negative {
-            break 'input_processing;
-        } else if char == '-' {
-            may_be_negative = true;
-        } else if char.is_whitespace() && integers.get(index) != None {
-            may_be_negative = false;
-            index += 1;
+            integers.push(n);
         }
     }
-
-    // shadow integers
-    let integers: Vec<u32> = integers.iter().map(|x| x.parse().unwrap()).collect();
 
     // find and print minimum
     let min = integers.iter().min().copied();
@@ -55,11 +47,14 @@ fn main() {
     }
 
     // calculate and print sum
-    let sum: u32 = integers.iter().sum();
+    let sum: i64 = integers.iter().sum();
     println!("sum = {sum}");
 
     // calculate and print mean as f64
-    println!("mean = {}", sum as f64 / index as f64);
+    match integers.len() {
+        0 => println!("mean = 0"),
+        _ => println!("mean = {}", sum as f64 / integers.len() as f64),
+    }
 
     // line per value printing even/odd using if as an expression
     for integer in integers {
