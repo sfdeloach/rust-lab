@@ -3,57 +3,69 @@
 // least once, shadowing at least once, and a labeled break to stop at the
 // first negative number.
 
-use std::io::{self, Write};
+use std::io::{self};
 fn main() {
     let mut user_input = String::new();
-    let mut integers: Vec<String> = Vec::new();
+    let mut integers = Vec::new();
     let mut index = 0;
-    let mut min = 0;
-    let mut max = 0;
-    let mut sum = 0;
+    let mut may_be_negative = false;
 
-    print!("Enter integers: ");
-    io::stdout().flush().expect("Failed to flush stdout.");
+    // gather user input
+    println!(
+        "Enter non-negative integers separated by whitespace. A negative number stops processing."
+    );
+
     io::stdin()
         .read_line(&mut user_input)
         .expect("Failed to read line.");
 
     'input_processing: for char in user_input.chars() {
-        if char.is_numeric() {
+        if char.is_numeric() && !may_be_negative {
             if integers.get(index) == None {
                 integers.push(String::from(""));
             }
             integers[index].push(char);
-        } else if char.is_whitespace() && integers.get(index) != None {
-            let value: u32 = integers[index].parse().expect("Failed to parse.");
-
-            // a line per value with its parity, using if as an expression
-            println!("{}: {}", value, if value % 2 == 0 { "even" } else { "odd" });
-
-            if index == 0 {
-                min = value;
-                max = value;
-            } else {
-                if value < min {
-                    min = value;
-                }
-
-                if value > max {
-                    max = value;
-                }
-            }
-
-            sum += value;
-
-            index += 1;
-        } else if char == '-' {
+        } else if char.is_numeric() && may_be_negative {
             break 'input_processing;
+        } else if char == '-' {
+            may_be_negative = true;
+        } else if char.is_whitespace() && integers.get(index) != None {
+            may_be_negative = false;
+            index += 1;
         }
     }
 
-    println!("----------");
-    println!("min = {min}");
-    println!("max = {max}");
+    // shadow integers
+    let integers: Vec<u32> = integers.iter().map(|x| x.parse().unwrap()).collect();
+
+    // find and print minimum
+    let min = integers.iter().min().copied();
+
+    match min {
+        Some(value) => println!("min = {}", value),
+        None => println!("There is no minimum."),
+    }
+
+    // find and print maximum
+    let max = integers.iter().max().copied();
+
+    match max {
+        Some(value) => println!("max = {}", value),
+        None => println!("There is no maximum."),
+    }
+
+    // calculate and print sum
+    let sum: u32 = integers.iter().sum();
     println!("sum = {sum}");
+
+    // calculate and print mean as f64
     println!("mean = {}", sum as f64 / index as f64);
+
+    // line per value printing even/odd using if as an expression
+    for integer in integers {
+        println!(
+            "{integer} is {}",
+            if integer % 2 == 0 { "even" } else { "odd" }
+        );
+    }
 }
